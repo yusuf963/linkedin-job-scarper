@@ -10,22 +10,20 @@ def on_data(data: EventData):
     print('[On_DATA]', data.title, data.company,
           data.date, data.link, len(data.description))
 
-
 def on_error(error):
     print('[ON_ERROR]', error)
-
 
 def on_end():
     print('[On_END]')
 
+print('I am here')
 
 scraper = LinkedinScraper(
-    chrome_executable_path=None,   # Custom Chrome executable path (e.g. /foo/bar/bin/chromedriver)
+    chrome_executable_path="\c:\Windows\chromedriver.exe",   # Custom Chrome executable path (e.g. /foo/bar/bin/chromedriver)
     chrome_options=None,  # Custom Chrome options here
     headless=True,  # Overrides headless mode only if chrome_options is None
-    max_workers=1,  # How many threads will be spawned to run queries concurrently (one Chrome driver for each thread)
-    # Slow down the scraper to avoid 'Too many requests (429)' errors
-    slow_mo=1.3,
+    max_workers=1,    # How many threads will be spawned to run queries concurrently (one Chrome driver for each thread)
+    slow_mo=1.3,    # Slow down the scraper to avoid 'Too many requests (429)' errors
 )
 # Add event listeners
 scraper.on(Events.DATA, on_data)
@@ -34,7 +32,7 @@ scraper.on(Events.END, on_end)
 
 queries = [
     Query(
-        option=QueryOptions(
+        options=QueryOptions(
             optimize=True,  # Blocks requests for resources like images and stylesheet
             limit=27  # Limit the number of jobs to scrape
         )
@@ -47,11 +45,10 @@ queries = [
             limit=5,
             filters=QueryFilters(
                 company_jobs_url='https://www.linkedin.com/jobs/search/?f_C=1441%2C17876832%2C791962%2C2374003%2C18950635%2C16140%2C10440912&geoId=92000000',
-                relevance=RemoteFilters.RECENT,
+                relevance=RelevanceFilters.RECENT,
                 time=TimeFilters.MONTH,
                 type=[TypeFilters.FULL_TIME, TypeFilters.INTERNSHIP],
                 experience=None,
-
             )
         )
     ),
