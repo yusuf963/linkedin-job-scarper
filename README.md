@@ -17,3 +17,6 @@ https://pypi.org/project/linkedin-jobs-scraper/
  - Chrome
  - ChromDriver   https://chromedriver.chromium.org/
  - Python >= 3.6
+
+ # to install node_modules, go to the respective direcoty of your project and run
+ npm i 
