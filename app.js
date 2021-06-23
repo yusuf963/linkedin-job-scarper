@@ -1,9 +1,8 @@
-
-
 const fs = require("fs");
 const stringify = require("csv-stringify")
 const moment = require('moment');
 timestamp = moment().format('DD-MM-YYYY-HH-m-s')
+
 const {
     LinkedinScraper,
     relevanceFilter,
@@ -12,21 +11,21 @@ const {
     experienceLevelFilter,
     events,
 } = require("linkedin-jobs-scraper");
+
 scraped_data = []
 let columns = {
-    title:'Job Title', 
-    desc :'Description', 
-    query:'Query', 
-    loc:'Job Location', 
-    jobId: 'Job Id', 
-    company:'Company Name', 
-    level:'Senority Level', 
-    func:'function', 
-    link:'Job Link',
+    title: 'Job Title',
+    desc: 'Description',
+    query: 'Query',
+    loc: 'Job Location',
+    jobId: 'Job Id',
+    company: 'Company Name',
+    level: 'Senority Level',
+    func: 'function',
+    link: 'Job Link',
     type: 'Emplyment Type',
     applyLink: 'Apply Link'
-    };
-
+};
 
 (async () => {
     // Each scraper instance is associated with one browser.
@@ -72,23 +71,23 @@ let columns = {
             data.jobFunction,
             data.link,
             data.employmentType,
-            data.applyLink?data.applyLink:'N/A'
+            data.applyLink ? data.applyLink : 'N/A'
         ])
-        
+
     });
 
     scraper.on(events.scraper.error, (err) => {
         console.error(err);
     });
-    
+
     scraper.on(events.scraper.end, () => {
         stringify(scraped_data, { header: true, columns: columns }, (err, output) => {
             if (err) throw err;
             fs.writeFile(`result${timestamp}.csv`, output, (err) => {
-              if (err) throw err;
-              console.log('data is saved.');
+                if (err) throw err;
+                console.log('csv has been created and scrraped data has been saved into it.');
             });
-          });
+        });
         console.log('All done!');
     });
 
@@ -112,12 +111,12 @@ let columns = {
         // Run queries serially
         scraper.run([
             {
-                query: "Platform Engineer"
+                query: "Devops"
             },
         ], { // Global options for this run, will be merged individually with each query options (if any)
             locations: ["United Kingdom"],
             optimize: true,
-            limit: 50,
+            limit: 2,
         }),
     ]);
     // Close browser
