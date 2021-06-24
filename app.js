@@ -1,7 +1,8 @@
 const fs = require("fs");
+const objectToCsv = require('objects-to-csv')
 const stringify = require("csv-stringify")
 const moment = require('moment');
-timestamp = moment().format('DD-MM-YYYY-HH-m-s')
+timestamp = moment().format('DD-MM-YYYY-HH-m')
 
 const {
     LinkedinScraper,
@@ -14,16 +15,21 @@ const {
 
 scraped_data = []
 let columns = {
-    title: 'Job Title',
-    desc: 'Description',
-    query: 'Query',
-    loc: 'Job Location',
-    jobId: 'Job Id',
+    scrapedTime: 'Time Stamp',
     company: 'Company Name',
+    industry: 'Company Industry',
+    place: 'Company Location',
+    companyUrl: 'Company URL',
+    title: 'Job Title',
+    date: 'Job Posted Date',
+    loc: 'Job Location',
+    query: 'Query',
+    jobId: 'Job Id',
     level: 'Senority Level',
-    func: 'function',
-    link: 'Job Link',
     type: 'Emplyment Type',
+    func: 'function',
+    desc: 'Description',
+    link: 'Job Link',
     applyLink: 'Apply Link'
 };
 
@@ -32,7 +38,7 @@ let columns = {
     // Concurrent queries will run on different pages within the same browser instance.
     const scraper = new LinkedinScraper({
         headless: true,
-        slowMo: 500,
+        slowMo: 800,
         args: [
             "--lang=en-GB",
         ],
@@ -40,17 +46,21 @@ let columns = {
 
     // Add listeners for scraper events
     scraper.on(events.scraper.data, (data) => {
+        let scrappedTime = timestamp
+        console.log('heeeeeeeeeeeeeeee', scrappedTime)
+        let companyUrl = `www.linkedin.com/company/${data.company.toLowerCase().replace(/[\s\n\r\' '\.]+/g, "")}`
         console.log(
             // data.description.length,
-            // data.descriptionHTML.length,
+            // data.descriptionHTML,
             // data.description,
             // `Description='${data.description.replace('\n', '')}'`,
             // `Query='${data.query}'`,
             // `Location='${data.location}'`,
             // `Id='${data.jobId}'`,
             `Title='${data.title}'`,
+            `CompanyUrl=${companyUrl}`,
             // `Company='${data.company ? data.company : "N/A"}'`,
-            // `CompanyURL='${data.company.link ? data.company : "N/A"}'`,
+            // `CompanyURL='${data.company.link}'`,
             // `Place='${data.place}'`,
             // `Date='${data.date}'`,
             // `Link='${data.link}'`,
@@ -58,19 +68,25 @@ let columns = {
             // `senorityLevel='${data.senorityLevel}'`,
             // `function='${data.jobFunction}'`,
             // `employmentType='${data.employmentType}'`,
-            // `industries='${data.industries}'`,
+            // `industries='${data.industries}'`
+
         );
         scraped_data.push([
-            data.title,
-            data.description.replace(/[\s\n\r]+/g, " ").trim(),
-            data.query,
-            data.location,
-            data.jobId,
+            scrappedTime,
             data.company,
+            data.industries,
+            data.place,
+            companyUrl,
+            data.title,
+            data.date,
+            data.location,
+            data.query,
+            data.jobId,
             data.senorityLevel,
-            data.jobFunction,
-            data.link,
             data.employmentType,
+            data.jobFunction,
+            data.description.replace(/[\s\n\r]+/g, " ").trim(),
+            data.link,
             data.applyLink ? data.applyLink : 'N/A'
         ])
 
@@ -86,6 +102,16 @@ let columns = {
             fs.writeFile(`result${timestamp}.csv`, output, (err) => {
                 if (err) throw err;
                 console.log('csv has been created and scrraped data has been saved into it.');
+
+                // delete file after download to local driver
+                // setTimeout(() => {
+                //     console.log('sleep')
+                //     fs.unlink(`result${timestamp}.csv`, (err) => {
+                //         if (err) throw err;
+                //         console.log('File deleted!');
+                //     });
+                //     console.log('awake')
+                // }, 5000)
             });
         });
         console.log('All done!');
@@ -111,7 +137,7 @@ let columns = {
         // Run queries serially
         scraper.run([
             {
-                query: "Devops"
+                query: "Data Analyst"
             },
         ], { // Global options for this run, will be merged individually with each query options (if any)
             locations: ["United Kingdom"],
@@ -122,3 +148,4 @@ let columns = {
     // Close browser
     await scraper.close();
 })();
+
