@@ -69,7 +69,6 @@ let columns = {
             // `function='${data.jobFunction}'`,
             // `employmentType='${data.employmentType}'`,
             // `industries='${data.industries}'`
-
         );
         scraped_data.push([
             scrappedTime,
@@ -89,7 +88,6 @@ let columns = {
             data.link,
             data.applyLink ? data.applyLink : 'N/A'
         ])
-
     });
 
     scraper.on(events.scraper.error, (err) => {
@@ -102,7 +100,6 @@ let columns = {
             fs.writeFile(`result${timestamp}.csv`, output, (err) => {
                 if (err) throw err;
                 console.log('csv has been created and scrraped data has been saved into it.');
-
                 // delete file after download to local driver
                 // setTimeout(() => {
                 //     console.log('sleep')
@@ -111,7 +108,7 @@ let columns = {
                 //         console.log('File deleted!');
                 //     });
                 //     console.log('awake')
-                // }, 5000)
+                // }, 3000)
             });
         });
         console.log('All done!');
